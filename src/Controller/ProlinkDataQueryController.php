@@ -54,12 +54,11 @@ class ProlinkDataQueryController extends AbstractController {
     }
 
     /**
-     * @Rest\Get("/CZ/bom/{par_no}/{comp_no}")
+     * @Rest\Get("/CZ/part_data/{par_no}")
      * @param $par_no
-     * @param $comp_no
      * @return JsonResponse
      */
-    public function getBOMData($par_no,$comp_no): JsonResponse {
+    public function getBOMData($par_no): JsonResponse {
         $conn = $this->getDoctrine()->getConnection();
 
         $part_detail = $conn->fetchAll('SELECT pt_part,pt_um,pt_desc1,pt_prod_line,pt_status FROM pt_mstr WHERE pt_part like ?', ['%'.$par_no.'%']);
