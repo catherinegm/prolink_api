@@ -31,7 +31,7 @@ class ProlinkDataQueryController extends AbstractController {
     }
 
     /**
-     * @Rest\Get("/CQ/pt/{part_no}")
+     * @Rest\Get("/SMT/pt/{part_no}")
      * @param $part_no
      * @return JsonResponse
      */
