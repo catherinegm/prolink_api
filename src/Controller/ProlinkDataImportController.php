@@ -103,7 +103,7 @@ class ProlinkDataImportController extends AbstractController {
      * @return JsonResponse
      */
     public function getModifiedBOMdataSMT(): JsonResponse {
-        $conn = $this->getDoctrine()->getConnection();
+        $conn = $this->getDoctrine()->getConnection('customer');
 
         $yesterday_date = date("Y-m-d",strtotime("-1 day"));
         //$yesterday_date = date("Y-m-d",strtotime("2022-3-11"));

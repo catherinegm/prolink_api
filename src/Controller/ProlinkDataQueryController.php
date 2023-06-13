@@ -35,6 +35,29 @@ class ProlinkDataQueryController extends AbstractController {
      * @param $part_no
      * @return JsonResponse
      */
+    public function isPartNumExistSMT($part_no): JsonResponse {
+        $conn = $this->getDoctrine()->getConnection('customer');
+
+        $num = $conn->fetchColumn('SELECT count(*) as num FROM pt_mstr WHERE pt_part = ?', [$part_no]);
+        if($num > 0){
+            $exist = true;
+        }else{
+            $exist = false;
+        }
+        $restresult = [
+            'msg' => 'Data fetched successfully',
+            'data' => ['exist'=>$exist],
+            'status' => true
+        ];
+
+        return new JsonResponse($restresult);
+    }
+
+    /**
+     * @Rest\Get("/CQ/pt/{part_no}")
+     * @param $part_no
+     * @return JsonResponse
+     */
     public function isPartNumExistCQ($part_no): JsonResponse {
         $conn = $this->getDoctrine()->getConnection('customer');
 
