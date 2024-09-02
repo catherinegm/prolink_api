@@ -121,6 +121,24 @@ class ProlinkDataQueryController extends AbstractController {
         return new JsonResponse($restresult);
     }
 
+    /**
+     * @Rest\Get("/CZ/supplier/getAllData")
+     * @return JsonResponse
+     */
+    public function getSupplierList(): JsonResponse {
+        $conn = $this->getDoctrine()->getConnection();
+
+        $supplier_list = $conn->fetchAll("SELECT vd_addr as s_code,vd_sort as s_name FROM vd_mstr WHERE vd_sort <> '' ");
+
+        $restresult = [
+            'msg' => 'Data fetched successfully',
+            'data' => $supplier_list,
+            'status' => true
+        ];
+
+        return new JsonResponse($restresult);
+    }
+
 
 
 
