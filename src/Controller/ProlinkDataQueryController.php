@@ -139,6 +139,29 @@ class ProlinkDataQueryController extends AbstractController {
         return new JsonResponse($restresult);
     }
 
+    /**
+     * @Rest\Get("/CZ/supplier/getData/{supplier_name}")
+     * @param $supplier_name
+     * @return JsonResponse
+     */
+    public function isSupplierExist($supplier_name): JsonResponse {
+        $conn = $this->getDoctrine()->getConnection();
+
+        $num = $conn->fetchColumn('SELECT count(*) as num FROM vd_mstr WHERE vd_sort = ?', [$supplier_name]);
+        if($num > 0){
+            $exist = true;
+        }else{
+            $exist = false;
+        }
+        $restresult = [
+            'msg' => 'Data fetched successfully',
+            'data' => ['exist'=>$exist],
+            'status' => true
+        ];
+
+        return new JsonResponse($restresult);
+    }
+
 
 
 
