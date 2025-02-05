@@ -162,6 +162,78 @@ class ProlinkDataQueryController extends AbstractController {
         return new JsonResponse($restresult);
     }
 
+    /**
+     * @Rest\Get("/CZ/ecp_data/{par_no}")
+     * @param $par_no
+     * @return JsonResponse
+     */
+    public function getECPData($par_no): JsonResponse {
+        $conn = $this->getDoctrine()->getConnection();
+
+        $part_all = $conn->fetchAll("SELECT pt_part FROM pt_mstr 
+            WHERE pt_part LIKE ? AND pt_part NOT LIKE '%SYN%'
+              AND (
+                   pt_part LIKE '%ECP%' 
+                OR pt_part LIKE '%HW%' 
+                OR pt_part LIKE '%FW%' 
+                OR pt_part LIKE '%CFG%'
+              ) order by pt_part;", ['%'.$par_no.'%']);
+
+        $keywords = ["HW", "FW"];
+        $latestVersions = [];
+        $noKeywordItems = [];
+
+        foreach ($part_all as $item_arr) {
+            $item = $item_arr['pt_part'];
+            $found = false;
+
+            foreach ($keywords as $keyword) {
+                $pos = stripos($item, $keyword);
+
+                if ($pos !== false) {
+                    $found = true;
+                    $prefix = substr($item, 0, $pos);
+                    $prefix = strtoupper($prefix);
+                    $versionPart = substr($item, $pos + strlen($keyword));
+                    $version = (int)preg_replace('/[^0-9]/', '', $versionPart);
+
+                    if (!isset($latestVersions[$keyword][$prefix]) || $version > $latestVersions[$keyword][$prefix]['version']) {
+                        $latestVersions[$keyword][$prefix] = [
+                            'part' => $item,
+                            'version' => $version
+                        ];
+                    }
+                }
+            }
+
+            if (!$found) {
+                $noKeywordItems[] = $item;
+            }
+        }
+
+        $filteredResults = [];
+        foreach ($latestVersions as $keyword => $items) {
+            $filteredResults = array_merge($filteredResults, array_column($items, 'part'));
+        }
+
+        $finalResult = array_merge($filteredResults, $noKeywordItems);
+
+        if(!empty($finalResult)) {
+            $restresult = [
+                'msg' => 'Data fetched successfully',
+                'data' => $finalResult,
+                'status' => true,
+            ];
+        } else {
+            $restresult = [
+                'msg' => 'Not found',
+                'data' => [],
+                'status' => false,
+            ];
+        }
+        return new JsonResponse($restresult);
+    }
+
 
 
 
